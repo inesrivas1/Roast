@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROA$T</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0d0d0d;font-family:'DM Sans',sans-serif;color:#f0ede6;min-height:100vh;}
+.app{max-width:480px;margin:0 auto;background:#0d0d0d;min-height:100vh;padding-bottom:72px;}
+
+/* HEADER */
+.header{background:#0d0d0d;border-bottom:1px solid #1e1e1e;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:#f0ede6;line-height:1;}
+.logo span{color:#ff6b1a;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.mode-pill{display:flex;background:#161616;border:1px solid #2a2a2a;border-radius:20px;overflow:hidden;}
+.mode-pill button{background:none;border:none;color:#555;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;padding:5px 10px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.mode-pill button.active{background:#ff6b1a;color:#0d0d0d;}
+.shame-badge{background:#ff6b1a;color:#0d0d0d;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:4px 11px;border-radius:4px;}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#111;border-top:1px solid #1e1e1e;display:flex;z-index:100;}
+.nav-btn{flex:1;background:none;border:none;color:#444;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.3px;padding:8px 2px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color 0.2s;}
+.nav-icon{font-size:17px;}
+.nav-btn.active{color:#ff6b1a;}
+.nav-btn:hover:not(.active){color:#ccc;}
+
+/* PAGES */
+.page{display:none;padding:16px 20px;animation:fadeIn 0.2s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* SHARED */
+.section-label{font-size:10px;font-weight:600;letter-spacing:2px;color:#3a3a3a;text-transform:uppercase;margin-bottom:9px;}
+.divider{height:1px;background:#1a1a1a;margin:16px 0;}
+.pill{font-size:10px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:0.5px;flex-shrink:0;}
+.pill-red{background:#ff3a1a18;color:#ff6b1a;}
+.pill-amber{background:#ffaa0018;color:#ffaa00;}
+.pill-green{background:#22cc6618;color:#22cc66;}
+.pill-gold{background:#c9a84c18;color:#c9a84c;}
+
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px;}
+.stat-card{background:#161616;border:1px solid #1e1e1e;border-radius:8px;padding:11px 10px;}
+.stat-lbl{font-size:10px;color:#444;margin-bottom:4px;font-weight:500;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#f0ede6;letter-spacing:1px;line-height:1;}
+.stat-val.hot{color:#ff6b1a;}
+.stat-sub{font-size:10px;color:#ff6b1a;margin-top:2px;}
+
+/* ROAST BOX */
+.roast-box{background:#161616;border:1px solid #ff6b1a1a;border-radius:12px;padding:14px 16px;margin-bottom:14px;}
+.roast-box-avatar{font-size:26px;margin-bottom:5px;}
+.roast-box-grade{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:3px;color:#444;margin-bottom:3px;}
+.roast-box-text{font-size:13px;color:#bbb;line-height:1.6;font-style:italic;}
+
+/* WEEK CHART */
+.week-chart{display:flex;align-items:flex-end;gap:4px;height:56px;margin-bottom:16px;}
+.bc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;}
+.bc-bar{width:100%;border-radius:2px 2px 0 0;background:#1e1e1e;min-height:2px;}
+.bc-bar.today{background:#ff6b1a;}
+.bc-day{font-size:9px;color:#444;font-weight:600;}
+
+/* HEAT BARS */
+.heat-row{margin-bottom:10px;}
+.heat-meta{display:flex;justify-content:space-between;font-size:11px;color:#444;margin-bottom:4px;}
+.heat-track{height:4px;background:#1a1a1a;border-radius:2px;overflow:hidden;}
+.heat-fill{height:100%;border-radius:2px;background:#ff6b1a;}
+
+/* STREAK STRIP */
+.streak-strip{background:#161616;border:1px solid #ff6b1a1a;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
+.streak-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#ff6b1a;letter-spacing:1px;line-height:1;flex-shrink:0;}
+.streak-right{flex:1;}
+.streak-label{font-size:10px;letter-spacing:1.5px;color:#444;text-transform:uppercase;margin-bottom:6px;}
+.streak-dots{display:flex;gap:4px;}
+.s-dot{width:22px;height:22px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#333;}
+.s-dot.done{background:#ff6b1a;border-color:#ff6b1a;color:#0d0d0d;}
+.s-dot.cur{background:#ff6b1a18;border-color:#ff6b1a;color:#ff6b1a;}
+
+/* TRANSACTIONS */
+.tx-card{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:12px;margin-bottom:7px;display:flex;gap:10px;align-items:flex-start;transition:border-color 0.15s;}
+.tx-card:hover{border-color:#ff6b1a22;}
+.tx-icon{font-size:17px;flex-shrink:0;width:34px;height:34px;background:#1e1e1e;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.tx-body{flex:1;min-width:0;}
+.tx-title{font-size:13px;font-weight:600;color:#f0ede6;display:flex;justify-content:space-between;margin-bottom:2px;}
+.tx-amt{font-family:'Bebas Neue',sans-serif;font-size:14px;color:#ff6b1a;letter-spacing:0.5px;margin-left:6px;flex-shrink:0;}
+.tx-roast{font-size:11px;color:#666;line-height:1.5;font-style:italic;}
+.tx-roast.loading{color:#333;}
+.roast-btn{background:#ff6b1a;color:#0d0d0d;border:none;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer;flex-shrink:0;align-self:center;transition:all 0.2s;letter-spacing:0.2px;}
+.roast-btn:hover{background:#ff8040;}
+.roast-btn:disabled{background:#1e1e1e;color:#333;cursor:not-allowed;}
+
+/* SUBS */
+.sub-row{background:#161616;border:1px solid #1e1e1e;border-radius:8px;padding:10px 13px;margin-bottom:6px;display:flex;align-items:center;gap:9px;}
+.sub-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sub-name{flex:1;font-size:13px;color:#f0ede6;font-weight:500;}
+.sub-cost{font-family:'Bebas Neue',sans-serif;font-size:14px;color:#666;letter-spacing:0.5px;margin-right:6px;}
+
+/* LEADERBOARD */
+.lb-hero{background:#161616;border:1px solid #ff6b1a1a;border-radius:12px;padding:14px 16px;margin-bottom:14px;text-align:center;}
+.lb-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:#ff6b1a;margin-bottom:1px;}
+.lb-sub{font-size:10px;color:#444;letter-spacing:1px;}
+.lb-row{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:12px 13px;margin-bottom:6px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color 0.15s;}
+.lb-row:hover{border-color:#ff6b1a22;}
+.lb-row.me{border-color:#ff6b1a44;background:#ff6b1a06;}
+.lb-rank{font-family:'Bebas Neue',sans-serif;font-size:20px;width:24px;text-align:center;flex-shrink:0;}
+.r1{color:#ff6b1a;} .r2{color:#888;} .r3{color:#cd7c3a;} .r4{color:#2a2a2a;}
+.lb-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:13px;font-weight:600;color:#f0ede6;display:flex;align-items:center;gap:5px;}
+.you-tag{font-size:9px;background:#ff6b1a;color:#0d0d0d;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:0.5px;}
+.lb-badge{font-size:10px;color:#555;margin-top:1px;}
+.lb-right{text-align:right;}
+.lb-shame{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff6b1a;letter-spacing:1px;}
+.lb-spent{font-size:10px;color:#444;margin-top:1px;}
+
+/* ROAST FRIEND */
+.rf-hero{background:#161616;border:1px solid #ff6b1a1a;border-radius:12px;padding:14px 16px;margin-bottom:14px;}
+.rf-hero-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff6b1a;letter-spacing:2px;margin-bottom:2px;}
+.rf-hero-sub{font-size:12px;color:#555;line-height:1.5;}
+.friend-row{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:11px 13px;margin-bottom:6px;}
+.friend-top{display:flex;align-items:center;gap:10px;}
+.friend-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.friend-info{flex:1;}
+.friend-name{font-size:13px;font-weight:600;color:#f0ede6;}
+.friend-sin{font-size:11px;color:#555;margin-top:1px;}
+.rf-btn{background:#ff6b1a;color:#0d0d0d;border:none;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;flex-shrink:0;transition:all 0.2s;}
+.rf-btn:hover{background:#ff8040;}
+.rf-btn:disabled{background:#1e1e1e;color:#333;cursor:not-allowed;}
+.sent-bubble{background:#1a1a1a;border-left:3px solid #ff6b1a;border-radius:0 7px 7px 0;padding:9px 11px;margin-top:8px;font-size:11px;color:#999;font-style:italic;line-height:1.5;display:none;}
+.sent-bubble.show{display:block;}
+
+/* SQUAD CHALLENGES */
+.squad-hero{background:#161616;border:1px solid #22cc6618;border-radius:12px;padding:14px 16px;margin-bottom:14px;}
+.squad-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#22cc66;letter-spacing:2px;margin-bottom:1px;}
+.squad-meta{font-size:11px;color:#444;margin-bottom:10px;}
+.squad-pips{display:flex;margin-bottom:10px;}
+.squad-pip{width:26px;height:26px;border-radius:50%;border:2px solid #0d0d0d;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.squad-pip+.squad-pip{margin-left:-5px;}
+.prog-track{background:#1a1a1a;border-radius:3px;height:5px;overflow:hidden;margin-bottom:5px;}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.8s ease;}
+.prog-meta{display:flex;justify-content:space-between;font-size:10px;color:#444;}
+.gc-card{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:12px 13px;margin-bottom:7px;}
+.gc-card.live{border-color:#22cc6620;}
+.gc-card.done{border-color:#c9a84c20;}
+.gc-top{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;}
+.gc-icon{font-size:19px;flex-shrink:0;}
+.gc-body{flex:1;}
+.gc-name{font-size:13px;font-weight:600;color:#f0ede6;margin-bottom:1px;}
+.gc-desc{font-size:11px;color:#555;line-height:1.4;}
+.gc-prize{font-size:10px;color:#c9a84c;margin-top:3px;font-weight:600;letter-spacing:0.3px;}
+.gc-members{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.gc-mpill{display:flex;align-items:center;gap:3px;background:#1a1a1a;border-radius:20px;padding:2px 7px;}
+.gc-mname{font-size:10px;color:#777;}
+.gc-status{font-size:10px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:0.5px;align-self:flex-start;flex-shrink:0;}
+.st-live{background:#22cc6618;color:#22cc66;}
+.st-done{background:#c9a84c18;color:#c9a84c;}
+.st-fail{background:#ff3a1a18;color:#ff6b1a;}
+
+/* WARREN */
+.warren-card{background:#161616;border:1px solid #c9a84c22;border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.warren-header{display:flex;align-items:center;gap:11px;margin-bottom:12px;}
+.warren-av{width:46px;height:46px;border-radius:50%;background:#1e1e1e;border:2px solid #c9a84c44;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.warren-name{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#c9a84c;letter-spacing:1px;}
+.warren-title{font-size:10px;color:#555;}
+.warren-quote{font-size:13px;color:#aaa;line-height:1.6;font-style:italic;border-left:3px solid #c9a84c;padding-left:11px;margin-bottom:12px;}
+.warren-tip{background:#c9a84c0d;border:1px solid #c9a84c18;border-radius:8px;padding:11px;font-size:12px;color:#c9a84c;line-height:1.5;}
+.warren-tip b{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;opacity:0.6;}
+.warren-swap{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:12px 13px;margin-bottom:7px;}
+.ws-from{font-size:12px;font-weight:600;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;}
+.ws-from span{color:#ff6b1a;}
+.ws-advice{font-size:12px;color:#888;line-height:1.5;border-left:2px solid #c9a84c44;padding-left:10px;}
+
+/* SIMULATOR */
+.sim-setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.sim-input{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:13px;}
+.sim-input label{font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px;}
+.sim-input input[type=range]{width:100%;margin-bottom:5px;accent-color:#ff6b1a;}
+.sim-input .val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#ff6b1a;letter-spacing:1px;}
+.sim-choice{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:11px 13px;margin-bottom:7px;}
+.sim-choice-title{font-size:12px;font-weight:600;color:#666;margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.sim-opts{display:flex;gap:5px;flex-wrap:wrap;}
+.sim-opt{background:#0d0d0d;border:1px solid #252525;border-radius:5px;color:#666;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;padding:5px 9px;cursor:pointer;transition:all 0.15s;}
+.sim-opt:hover{border-color:#ff6b1a33;color:#ccc;}
+.sim-opt.sel{background:#ff6b1a12;border-color:#ff6b1a;color:#ff6b1a;}
+.cta{width:100%;background:#ff6b1a;border:none;border-radius:8px;color:#0d0d0d;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:13px;cursor:pointer;transition:background 0.2s;margin-top:5px;}
+.cta:hover{background:#ff8040;}
+.cta.ghost{background:#161616;border:1px solid #2a2a2a;color:#666;font-size:15px;margin-top:8px;}
+.cta.ghost:hover{border-color:#ff6b1a33;color:#ccc;}
+.sim-step{display:none;} .sim-step.active{display:block;}
+.res-hero{background:#161616;border:1px solid #ff6b1a1a;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center;}
+.res-grade{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:#444;margin-bottom:2px;}
+.res-num{font-family:'Bebas Neue',sans-serif;font-size:48px;color:#ff6b1a;letter-spacing:2px;line-height:1;}
+.res-sub{font-size:11px;color:#333;margin-top:3px;}
+.res-roast{background:#1a1a1a;border-left:3px solid #ff6b1a;border-radius:0 7px 7px 0;padding:9px 12px;margin-bottom:14px;font-size:12px;color:#777;font-style:italic;line-height:1.5;}
+.tl-row{display:grid;grid-template-columns:52px 1fr 68px;align-items:center;gap:9px;margin-bottom:7px;}
+.tl-age{font-family:'Bebas Neue',sans-serif;font-size:17px;color:#444;letter-spacing:1px;}
+.tl-track{background:#1a1a1a;border-radius:2px;height:7px;overflow:hidden;}
+.tl-fill{height:100%;border-radius:2px;background:#ff6b1a;transition:width 1s ease;}
+.tl-val{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#f0ede6;text-align:right;letter-spacing:0.5px;}
+.swap-box{background:#161616;border:1px solid #22cc6618;border-radius:10px;padding:13px;margin-bottom:12px;}
+.swap-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#22cc66;margin-bottom:9px;}
+.swap-item{display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:5px;}
+.sw-from{color:#ff6b1a;text-decoration:line-through;opacity:0.6;}
+.sw-arr{color:#333;}
+.sw-to{color:#22cc66;font-weight:600;}
+.swap-result{border-top:1px solid #1e1e1e;padding-top:10px;margin-top:6px;}
+.swap-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#22cc66;letter-spacing:1px;}
+.swap-diff{font-size:11px;color:#22cc66;margin-top:1px;}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.cmp-card{background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:11px;}
+.cmp-card.good{border-color:#22cc6622;}
+.cmp-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#444;margin-bottom:4px;}
+.cmp-val{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;}
+.cmp-card:not(.good) .cmp-val{color:#ff6b1a;}
+.cmp-card.good .cmp-val{color:#22cc66;}
+.cmp-desc{font-size:10px;color:#444;margin-top:2px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:82px;left:50%;transform:translateX(-50%) translateY(60px);background:#ff6b1a;color:#0d0d0d;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:9px 16px;border-radius:8px;z-index:200;max-width:300px;text-align:center;transition:transform 0.35s ease;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">ROA<span>$</span>T</div>
+  <div class="header-right">
+    <div class="mode-pill" id="mode-pill"></div>
+    <div class="shame-badge">SHAME: 74</div>
+  </div>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div class="page active" id="page-home">
+  <div class="roast-box">
+    <div class="roast-box-avatar" id="h-avatar">🔥</div>
+    <div class="roast-box-grade" id="h-grade">FINANCIALLY COOKED</div>
+    <div class="roast-box-text" id="h-roast">"You spent £47 on coffee this week. That's a flight to Amsterdam. You chose caffeine dependency over Europe. Iconic, honestly."</div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-lbl">Today</div><div class="stat-val hot">£38</div><div class="stat-sub">+£14 avg</div></div>
+    <div class="stat-card"><div class="stat-lbl">This month</div><div class="stat-val">£842</div><div class="stat-sub">Budget £600</div></div>
+    <div class="stat-card"><div class="stat-lbl">Sub waste</div><div class="stat-val hot">£127</div><div class="stat-sub">8 services</div></div>
+  </div>
+  <div class="streak-strip">
+    <div class="streak-num">5🔥</div>
+    <div class="streak-right">
+      <div class="streak-label">Day streak under budget</div>
+      <div class="streak-dots" id="streak-dots"></div>
+    </div>
+  </div>
+  <div class="section-label">This week</div>
+  <div class="week-chart" id="week-chart"></div>
+  <div class="section-label">Shame by category</div>
+  <div id="heat-bars"></div>
+</div>
+
+<!-- ═══ SPENDING ═══ -->
+<div class="page" id="page-spending">
+  <div class="section-label">Today's damage</div>
+  <div id="tx-list"></div>
+  <div class="divider"></div>
+  <div class="section-label">Subscription graveyard</div>
+  <div id="sub-list"></div>
+  <div style="background:#161616;border:1px solid #1e1e1e;border-radius:9px;padding:12px;margin-top:4px;text-align:center;">
+    <div class="stat-lbl" style="margin-bottom:3px;">Annual sub burn</div>
+    <div class="stat-val hot" style="font-size:32px;">£1,524</div>
+    <div style="font-size:11px;color:#444;margin-top:4px;font-style:italic;">"You could have gone to Ibiza. Twice."</div>
+  </div>
+</div>
+
+<!-- ═══ LEADERBOARD ═══ -->
+<div class="page" id="page-board">
+  <div class="lb-hero">
+    <div style="font-size:22px;margin-bottom:4px;">🏆</div>
+    <div class="lb-title">SHAME BOARD</div>
+    <div class="lb-sub">WEEK OF 10–16 MARCH · BROKE SQUAD</div>
+  </div>
+  <div class="section-label">Most cooked this week</div>
+  <div id="lb-list"></div>
+  <button class="cta" style="font-size:14px;padding:11px;margin-top:6px;" onclick="showToast('📲 Invite link copied! Send to your most financially irresponsible friend.')">INVITE A FRIEND</button>
+</div>
+
+<!-- ═══ ROAST A FRIEND ═══ -->
+<div class="page" id="page-roast">
+  <div class="rf-hero">
+    <div class="rf-hero-title">ROAST A FRIEND 🎯</div>
+    <div class="rf-hero-sub">Pick a friend and their worst habit. We'll write the roast. You take the credit.</div>
+  </div>
+  <div class="section-label">Your squad</div>
+  <div id="friend-list"></div>
+</div>
+
+<!-- ═══ SQUAD CHALLENGES ═══ -->
+<div class="page" id="page-squad">
+  <div class="squad-hero">
+    <div class="squad-name">BROKE SQUAD 💀</div>
+    <div class="squad-meta">4 members · Week 3 of 4</div>
+    <div class="squad-pips" id="squad-pips"></div>
+    <div class="section-label" style="margin-bottom:5px;">Squad completion</div>
+    <div class="prog-track"><div class="prog-fill" style="width:62%;background:#22cc66;"></div></div>
+    <div class="prog-meta"><span>62% done</span><span>5 days left</span></div>
+  </div>
+  <div class="section-label">Active challenges</div>
+  <div id="gc-list"></div>
+</div>
+
+<!-- ═══ WARREN ═══ -->
+<div class="page" id="page-warren">
+  <div class="warren-card">
+    <div class="warren-header">
+      <div class="warren-av">🎩</div>
+      <div>
+        <div class="warren-name">Warren Buffett</div>
+        <div class="warren-title">Oracle of Omaha · Net worth: $130B</div>
+      </div>
+    </div>
+    <div class="warren-quote">"Do not save what is left after spending, but spend what is left after saving."</div>
+    <div class="warren-tip">
+      <b>His verdict on your week</b>
+      You spent £47 on coffee and £127 on subscriptions you barely use. Warren has held Coca-Cola stock since 1988. He has never paid £6 for someone else to make it.
+    </div>
+  </div>
+  <div class="section-label">What would Warren do instead?</div>
+  <div id="warren-list"></div>
+</div>
+
+<!-- ═══ SIMULATOR ═══ -->
+<div class="page" id="page-sim">
+  <div class="sim-step active" id="sim-setup">
+    <div class="section-label">Your situation</div>
+    <div class="sim-setup-grid">
+      <div class="sim-input">
+        <label>Age</label>
+        <input type="range" min="18" max="40" value="21" id="age-sl" oninput="document.getElementById('age-v').textContent=this.value">
+        <div class="val" id="age-v">21</div>
+      </div>
+      <div class="sim-input">
+        <label>Salary</label>
+        <input type="range" min="18000" max="80000" step="1000" value="30000" id="sal-sl" oninput="document.getElementById('sal-v').textContent='£'+Math.round(+this.value/1000)+'k'">
+        <div class="val" id="sal-v">£30k</div>
+      </div>
+    </div>
+    <div class="section-label">Pick one per category</div>
+    <div id="sim-choices"></div>
+    <button class="cta" onclick="runSim()">SHOW MY FUTURE →</button>
+  </div>
+  <div class="sim-step" id="sim-results">
+    <div class="res-hero">
+      <div class="res-grade" id="res-grade">FINANCIALLY SCORCHED</div>
+      <div class="res-num" id="res-num">£0</div>
+      <div class="res-sub">at retirement (age 67)</div>
+    </div>
+    <div class="res-roast" id="res-roast"></div>
+    <div class="section-label">Wealth over time</div>
+    <div id="sim-tl" style="margin-bottom:16px;"></div>
+    <div class="section-label">The smart swap</div>
+    <div class="swap-box">
+      <div class="swap-title">WHAT IF YOU CHANGED THIS?</div>
+      <div id="swap-rows"></div>
+      <div class="swap-result">
+        <div style="font-size:10px;letter-spacing:1px;color:#444;text-transform:uppercase;margin-bottom:2px;">Retirement pot instead</div>
+        <div class="swap-num" id="swap-num">£0</div>
+        <div class="swap-diff" id="swap-diff"></div>
+      </div>
+    </div>
+    <div class="section-label">Side by side at 67</div>
+    <div class="cmp-grid">
+      <div class="cmp-card"><div class="cmp-lbl">Your path</div><div class="cmp-val" id="cmp-bad">£0</div><div class="cmp-desc">Current choices</div></div>
+      <div class="cmp-card good"><div class="cmp-lbl">Smarter path</div><div class="cmp-val" id="cmp-good">£0</div><div class="cmp-desc">With the swap</div></div>
+    </div>
+    <button class="cta ghost" onclick="showSimStep('sim-setup')">← CHANGE CHOICES</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" onclick="nav('home',this)"><span class="nav-icon">🏠</span>Home</button>
+  <button class="nav-btn" onclick="nav('spending',this)"><span class="nav-icon">💸</span>Spend</button>
+  <button class="nav-btn" onclick="nav('board',this)"><span class="nav-icon">🏆</span>Board</button>
+  <button class="nav-btn" onclick="nav('roast',this)"><span class="nav-icon">🎯</span>Roast</button>
+  <button class="nav-btn" onclick="nav('squad',this)"><span class="nav-icon">⚔️</span>Squad</button>
+  <button class="nav-btn" onclick="nav('warren',this)"><span class="nav-icon">🎩</span>Warren</button>
+  <button class="nav-btn" onclick="nav('sim',this)"><span class="nav-icon">📈</span>Future</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const modes=[
+  {id:'savage',label:'🔥',avatar:'🔥',grade:'FINANCIALLY COOKED',
+   roast:'"You spent £47 on coffee this week. That\'s a flight to Amsterdam. You chose caffeine dependency over Europe. Iconic, honestly."',
+   tx:["Three Starbucks in one day. The baristas know your name. That's not networking, that's a problem.","Deliveroo again? Your hob is literally right there. It does not bite.","A boba AND a Starbucks? Your blood type is now oat milk.","Co-op snacks at 11pm. We've all been there. We're still judging.","£2.99 on Steam. It's never just one game. You know this."],
+   sys:'Brutally sarcastic spending roast. 1-2 sentences max 25 words. Funny not mean.',
+   friendSys:'Brutally sarcastic roast of someone\'s spending habit. 2 sentences. End with "— sent via ROA$T 🔥"'},
+  {id:'parent',label:'😤',avatar:'😤',grade:'VERY DISAPPOINTED',
+   roast:'"I\'m not angry, I\'m just disappointed. £47 on coffee? We have a perfectly good kettle at home."',
+   tx:["We have coffee at home, darling. It tastes exactly the same and costs 8p.","I raised you with a fully functioning kitchen and this is what you do with it.","That boba drink has more sugar than a birthday cake. I worry about you.","Snacks at 11pm again? I thought we talked about this.","You said you'd only buy it if it was on sale. Was it? Was it?"],
+   sys:'Disappointed parent, passive-aggressive. 1-2 sentences.',
+   friendSys:'Disappointed parent tone, passive-aggressive roast of spending. 2 sentences. End with "— sent via ROA$T 😤"'},
+  {id:'buffett',label:'🎩',avatar:'🎩',grade:'NOT COMPOUND INTEREST',
+   roast:'"Rule #1: Never lose money. Rule #2: See Rule #1. You broke both this week on coffee alone."',
+   tx:["I have drunk the same Cherry Coke since 1988. It costs £1.20. Consistency builds wealth.","That delivery fee alone could buy a fraction of a dividend stock. Think about that.","Compound interest on £6.50 a day over 40 years at 7%: over £1 million. Just so you know.","Price is what you pay. Value is what you get. What value did those crisps provide?","I only buy things I intend to hold forever. Have you finished any game you own?"],
+   sys:'You are Warren Buffett. Short investing wisdom response to a bad purchase. 1-2 sentences.',
+   friendSys:'You are Warren Buffett commenting on someone\'s bad financial habit. 2 sentences. End with "— W. Buffett 🎩"'},
+  {id:'hype',label:'🎉',avatar:'🎉',grade:'THRIVING (SOMEHOW)',
+   roast:'"OKAY but you survived the week AND treated yourself AND still have £12 left?? That\'s called balance actually."',
+   tx:["Triple shot era!! You're THAT person and honestly we respect the grind commitment!!","Self-care is ordering in on a Wednesday. No notes. You deserve it completely.","Two drinks in one day?? We are CELEBRATING something apparently!!","Late night snacks are a love language. You love yourself. Beautiful energy.","Investment in entertainment is investment in happiness!! Growth mindset!!"],
+   sys:'Unhinged hype person finding the positive in bad spending. 1-2 sentences.',
+   friendSys:'Unhinged hype person roasting someone\'s spending but positively. 2 sentences. End with "— sent via ROA$T 🎉"'},
+];
+let mode='savage';
+
+const leaderboard=[
+  {name:'Redd',av:'🤦',col:'#4687ff',shame:91,spent:'£1,203',badge:'Deliveroo Dependent'},
+  {name:'Maya',av:'💀',col:'#e50914',shame:88,spent:'£1,104',badge:'Subscription Hoarder'},
+  {name:'You', av:'😬',col:'#ff6b1a',shame:74,spent:'£842', badge:'Oat Milk Addict',me:true},
+  {name:'Zac', av:'😅',col:'#22cc66',shame:68,spent:'£720', badge:'Almost Responsible'},
+  {name:'Tom', av:'🥲',col:'#c9a84c',shame:55,spent:'£601', badge:'Occasional Adult'},
+];
+
+const friends=[
+  {name:'Redd',av:'🤦',col:'#4687ff',sin:'£312 on Deliveroo this month'},
+  {name:'Zac', av:'😅',col:'#22cc66',sin:'6 unused subscriptions running'},
+  {name:'Maya',av:'💀',col:'#e50914',sin:'£89 on taxis (it\'s a 10-min walk)'},
+  {name:'Tom', av:'🥲',col:'#c9a84c',sin:'bought gym membership, went twice'},
+];
+
+const groupChallenges=[
+  {icon:'🍕',name:'No Deliveroo Week',desc:'Whole squad cooks at home for 7 days',prize:'🏆 Shame score -15 each',pct:60,days:5,status:'live',
+   members:[{n:'You',ok:true},{n:'Redd',ok:false},{n:'Zac',ok:true},{n:'Maya',ok:false}]},
+  {icon:'☕',name:'One Coffee Rule',desc:'Max 1 bought coffee per day for the week',prize:'🏆 "Caffeine Controlled" badge',pct:80,days:5,status:'live',
+   members:[{n:'You',ok:true},{n:'Redd',ok:true},{n:'Zac',ok:true},{n:'Maya',ok:false}]},
+  {icon:'📺',name:'Sub Purge',desc:'Everyone cancels one unused subscription',prize:'🏆 +10 squad points',pct:100,days:0,status:'done',
+   members:[{n:'You',ok:true},{n:'Redd',ok:true},{n:'Zac',ok:true},{n:'Maya',ok:true}]},
+  {icon:'💰',name:'Save £50 Together',desc:'Each member puts £50 into savings this week',prize:'🏆 "Broke No More" group badge',pct:25,days:5,status:'live',
+   members:[{n:'You',ok:true},{n:'Redd',ok:false},{n:'Zac',ok:false},{n:'Maya',ok:false}]},
+];
+
+const warrenAdvice=[
+  {spend:'£47 on coffee',save:'£40/mo',tip:'Invest £40/month in an S&P 500 index fund. In 30 years at 7%: £48,000. The latte factor is very real.'},
+  {spend:'£127 on subscriptions',save:'£87/mo',tip:'Cut to 2 services. Invest the £87 saved monthly. In 30 years: £105,000. Cancel LinkedIn Premium first — it\'s not working.'},
+  {spend:'£18.99 Deliveroo orders',save:'£60/mo',tip:'Cook 4 nights a week. Invest the £60 saved. Compounding turns this into £72,000 over 30 years.'},
+];
+
+const transactions=[
+  {icon:'☕',name:'Starbucks',amount:5.40,cat:'Coffee'},
+  {icon:'🍕',name:'Deliveroo',amount:18.99,cat:'Food delivery'},
+  {icon:'🧋',name:'Boba Guys',amount:6.50,cat:'Coffee'},
+  {icon:'🍫',name:'Co-op snacks',amount:4.20,cat:'Snacks'},
+  {icon:'🎮',name:'Steam',amount:2.99,cat:'Gaming'},
+];
+
+const subs=[
+  {name:'Netflix',cost:17.99,v:'ok',col:'#e50914'},
+  {name:'Spotify',cost:10.99,v:'ok',col:'#1db954'},
+  {name:'Disney+',cost:13.99,v:'meh',col:'#113ccf'},
+  {name:'Amazon Prime',cost:8.99,v:'ok',col:'#ff9900'},
+  {name:'Duolingo Plus',cost:6.99,v:'waste',col:'#58cc02'},
+  {name:'LinkedIn Premium',cost:39.99,v:'waste',col:'#0a66c2'},
+  {name:'Apple TV+',cost:8.99,v:'waste',col:'#333'},
+  {name:'NordVPN',cost:3.99,v:'meh',col:'#4687ff'},
+];
+
+const simChoices=[
+  {id:'phone',icon:'📱',label:'Phone',opts:[
+    {label:'£800/year',inv:0},{label:'£800 every 3yr',inv:0},{label:'Keep + invest diff',inv:67,smart:true}]},
+  {id:'coffee',icon:'☕',label:'Coffee',opts:[
+    {label:'£5 daily',inv:0},{label:'3x/week',inv:0},{label:'Home brew + invest',inv:140,smart:true}]},
+  {id:'rent',icon:'🏠',label:'Housing',opts:[
+    {label:'Luxury flat',inv:0},{label:'Average rent',inv:0},{label:'House share + invest',inv:275,smart:true}]},
+  {id:'invest',icon:'📈',label:'Investing',opts:[
+    {label:'Nothing',inv:0},{label:'£200 savings 2%',inv:200,rate:0.02},{label:'£200 index 7%',inv:200,smart:true}]},
+  {id:'subs',icon:'📺',label:'Subs',opts:[
+    {label:'All 8 (£127/mo)',inv:0},{label:'3 essentials',inv:0},{label:'1 + invest diff',inv:112,smart:true}]},
+];
+let simSel={phone:0,coffee:0,rent:0,invest:0,subs:0};
+const weekAmts=[22,45,18,67,38,89,38];
+const heatCats=[{l:'Coffee & drinks',p:88},{l:'Food delivery',p:72},{l:'Subscriptions',p:65},{l:'Impulse buys',p:41}];
+const squadCols=['#ff6b1a','#4687ff','#22cc66','#e50914'];
+const squadEmoji=['😬','🤦','😅','💀'];
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+function nav(p,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');if(btn)btn.classList.add('active');}
+function getMode(){return modes.find(m=>m.id===mode);}
+function fmt(n){if(n>=1e6)return'£'+(n/1e6).toFixed(1)+'M';if(n>=1000)return'£'+Math.round(n/1000)+'k';return'£'+n;}
+function showSimStep(id){document.querySelectorAll('.sim-step').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+// ── MODE PILL ─────────────────────────────────────────────────────────
+function buildModePill(){
+  const el=document.getElementById('mode-pill');
+  el.innerHTML='';
+  modes.forEach(m=>{
+    const b=document.createElement('button');
+    b.textContent=m.label;
+    if(m.id===mode)b.classList.add('active');
+    b.onclick=()=>setMode(m.id);
+    el.appendChild(b);
+  });
+}
+
+function setMode(id){
+  mode=id;
+  const m=getMode();
+  document.getElementById('h-avatar').textContent=m.avatar;
+  document.getElementById('h-grade').textContent=m.grade;
+  document.getElementById('h-roast').textContent=m.roast;
+  buildModePill();
+  document.getElementById('tx-list').innerHTML='';
+  buildTransactions();
+  document.getElementById('friend-list').innerHTML='';
+  buildFriends();
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────
+function buildHome(){
+  // streak dots
+  const dots=document.getElementById('streak-dots');
+  [true,true,true,true,true,false,false].forEach((d,i)=>{
+    const cls=d?'done':(i===5?'cur':'');
+    dots.innerHTML+=`<div class="s-dot ${cls}">${d?'✓':['M','T','W','T','F','S','S'][i]}</div>`;
+  });
+  // week chart
+  const chart=document.getElementById('week-chart');
+  const max=Math.max(...weekAmts);
+  ['M','T','W','T','F','S','S'].forEach((d,i)=>{
+    const pct=Math.round((weekAmts[i]/max)*100);
+    chart.innerHTML+=`<div class="bc-wrap"><div class="bc-bar${i===6?' today':''}" style="height:${pct}%"></div><div class="bc-day">${d}</div></div>`;
+  });
+  // heat bars
+  heatCats.forEach(c=>{
+    document.getElementById('heat-bars').innerHTML+=`<div class="heat-row"><div class="heat-meta"><span>${c.l}</span><span>${c.p}%</span></div><div class="heat-track"><div class="heat-fill" style="width:${c.p}%"></div></div></div>`;
+  });
+}
+
+// ── TRANSACTIONS ──────────────────────────────────────────────────────
+function buildTransactions(){
+  const list=document.getElementById('tx-list');
+  const m=getMode();
+  transactions.forEach((tx,i)=>{
+    const mid='txm-'+i,bid='txb-'+i;
+    const card=document.createElement('div');
+    card.className='tx-card';
+    card.innerHTML=`<div class="tx-icon">${tx.icon}</div><div class="tx-body"><div class="tx-title"><span>${tx.name}</span><span class="tx-amt">£${tx.amount.toFixed(2)}</span></div><div class="tx-roast" id="${mid}">${m.tx[i]||m.tx[0]}</div></div><button class="roast-btn" id="${bid}" onclick="aiRoastTx(${i},'${mid}','${bid}')">Roast</button>`;
+    list.appendChild(card);
+  });
+}
+
+async function aiRoastTx(i,mid,bid){
+  const tx=transactions[i],btn=document.getElementById(bid),el=document.getElementById(mid),m=getMode();
+  btn.disabled=true;btn.textContent='...';el.className='tx-roast loading';el.textContent='Consulting the oracle...';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:80,system:m.sys,messages:[{role:'user',content:`Roast: ${tx.name}, £${tx.amount}, ${tx.cat}`}]})});
+    const d=await r.json();
+    const t=d.content?.find(c=>c.type==='text')?.text||'No roast available.';
+    el.textContent='"'+t.replace(/^"|"$/g,'')+'"';el.className='tx-roast';
+  }catch(e){el.textContent='"Our servers are also broke. Solidarity."';el.className='tx-roast';}
+  btn.textContent='Done';btn.disabled=true;btn.style.background='#1e1e1e';btn.style.color='#333';
+}
+
+// ── SUBS ──────────────────────────────────────────────────────────────
+function buildSubs(){
+  const vl={ok:'WORTH IT',meh:'LUKEWARM',waste:'DELETE NOW'};
+  const vc={ok:'pill-green',meh:'pill-amber',waste:'pill-red'};
+  subs.forEach(s=>{
+    document.getElementById('sub-list').innerHTML+=`<div class="sub-row"><div class="sub-dot" style="background:${s.col}"></div><div class="sub-name">${s.name}</div><div class="sub-cost">£${s.cost.toFixed(2)}/mo</div><div class="pill ${vc[s.v]}">${vl[s.v]}</div></div>`;
+  });
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────
+function buildLeaderboard(){
+  const sorted=[...leaderboard].sort((a,b)=>b.shame-a.shame);
+  const list=document.getElementById('lb-list');
+  const rc=['r1','r2','r3','r4','r4'];
+  sorted.forEach((p,i)=>{
+    list.innerHTML+=`<div class="lb-row${p.me?' me':''}" onclick="showToast('${p.me?'That\'s you. Reflect on that.':p.name+'\'s shame profile: '+p.spent+' this week'}')">
+      <div class="lb-rank ${rc[i]||'r4'}">${i+1}${i===0?' 👑':''}</div>
+      <div class="lb-av" style="background:${p.col}18;border:1.5px solid ${p.col}44;">${p.av}</div>
+      <div class="lb-info"><div class="lb-name">${p.name}${p.me?'<span class="you-tag">YOU</span>':''}</div><div class="lb-badge">${p.badge}</div></div>
+      <div class="lb-right"><div class="lb-shame">${p.shame}</div><div class="lb-spent">${p.spent}</div></div>
+    </div>`;
+  });
+}
+
+// ── ROAST A FRIEND ────────────────────────────────────────────────────
+function buildFriends(){
+  const list=document.getElementById('friend-list');
+  friends.forEach((f,i)=>{
+    const bid='fb-'+i,sid='fs-'+i;
+    const row=document.createElement('div');
+    row.className='friend-row';
+    row.innerHTML=`<div class="friend-top"><div class="friend-av" style="background:${f.col}18;border:1.5px solid ${f.col}44;">${f.av}</div><div class="friend-info"><div class="friend-name">${f.name}</div><div class="friend-sin">${f.sin}</div></div><button class="rf-btn" id="${bid}" onclick="aiRoastFriend(${i},'${sid}','${bid}')">ROAST 🔥</button></div><div class="sent-bubble" id="${sid}"></div>`;
+    list.appendChild(row);
+  });
+}
+
+async function aiRoastFriend(i,sid,bid){
+  const f=friends[i],btn=document.getElementById(bid),el=document.getElementById(sid),m=getMode();
+  btn.disabled=true;btn.textContent='...';
+  el.style.display='block';el.className='sent-bubble show';el.textContent='Crafting the perfect roast...';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:100,system:m.friendSys,messages:[{role:'user',content:`Roast ${f.name} for: ${f.sin}`}]})});
+    const d=await r.json();
+    const t=d.content?.find(c=>c.type==='text')?.text||'No roast available.';
+    el.textContent='"'+t.replace(/^"|"$/g,'')+'"';
+  }catch(e){el.textContent='"Even our AI can\'t believe '+f.name+' spent that. Speechless."';}
+  btn.textContent='SENT ✓';btn.style.background='#1e1e1e';btn.style.color='#333';
+  showToast('🔥 Roast sent to '+f.name+'!');
+}
+
+// ── SQUAD ─────────────────────────────────────────────────────────────
+function buildSquad(){
+  squadEmoji.forEach((e,i)=>{
+    document.getElementById('squad-pips').innerHTML+=`<div class="squad-pip" style="background:${squadCols[i]}18;border-color:${squadCols[i]}55;">${e}</div>`;
+  });
+  const stClass={live:'st-live',done:'st-done',fail:'st-fail'};
+  const stLabel={live:'LIVE',done:'COMPLETE',fail:'FAILED'};
+  const progCol={live:'#22cc66',done:'#c9a84c',fail:'#ff6b1a'};
+  groupChallenges.forEach(c=>{
+    const mems=c.members.map(m=>`<div class="gc-mpill"><span>${m.ok?'✅':'⏳'}</span><span class="gc-mname">${m.n}</span></div>`).join('');
+    document.getElementById('gc-list').innerHTML+=`<div class="gc-card ${c.status}">
+      <div class="gc-top"><div class="gc-icon">${c.icon}</div><div class="gc-body"><div class="gc-name">${c.name}</div><div class="gc-desc">${c.desc}</div><div class="gc-prize">${c.prize}</div></div><div class="gc-status ${stClass[c.status]}">${stLabel[c.status]}</div></div>
+      <div class="gc-members">${mems}</div>
+      <div class="prog-track"><div class="prog-fill" style="width:${c.pct}%;background:${progCol[c.status]};"></div></div>
+      <div class="prog-meta"><span>${c.pct}% squad</span><span>${c.days>0?c.days+' days left':'Finished'}</span></div>
+    </div>`;
+  });
+}
+
+// ── WARREN ────────────────────────────────────────────────────────────
+function buildWarren(){
+  warrenAdvice.forEach(w=>{
+    document.getElementById('warren-list').innerHTML+=`<div class="warren-swap">
+      <div class="ws-from">Instead of: <span>${w.spend}</span><div class="pill pill-gold">SAVE ${w.save}</div></div>
+      <div class="ws-advice">${w.tip}</div>
+    </div>`;
+  });
+}
+
+// ── SIMULATOR ─────────────────────────────────────────────────────────
+function buildSimChoices(){
+  const el=document.getElementById('sim-choices');
+  simChoices.forEach(cat=>{
+    const g=document.createElement('div');
+    g.className='sim-choice';
+    g.innerHTML=`<div class="sim-choice-title">${cat.icon} ${cat.label}</div><div class="sim-opts" id="so-${cat.id}"></div>`;
+    el.appendChild(g);
+    cat.opts.forEach((opt,i)=>{
+      const b=document.createElement('button');
+      b.className='sim-opt'+(simSel[cat.id]===i?' sel':'');
+      b.textContent=opt.label;
+      b.onclick=()=>{simSel[cat.id]=i;document.querySelectorAll(`#so-${cat.id} .sim-opt`).forEach((x,j)=>x.className='sim-opt'+(j===i?' sel':''));};
+      document.getElementById('so-'+cat.id).appendChild(b);
+    });
+  });
+}
+
+function calcFV(monthly,rate,years){
+  if(monthly<=0)return 0;
+  const r=rate/12,n=years*12;
+  return r===0?monthly*n:monthly*((Math.pow(1+r,n)-1)/r);
+}
+
+function calcWealth(age,ov={}){
+  const years=67-age;let total=0;
+  simChoices.forEach(cat=>{
+    const idx=ov[cat.id]!==undefined?ov[cat.id]:simSel[cat.id];
+    const opt=cat.opts[idx];
+    const rate=opt.smart?0.07:(opt.rate||0);
+    total+=calcFV(opt.inv||0,rate,years);
+  });
+  return Math.round(total);
+}
+
+function runSim(){
+  showSimStep('sim-results');
+  const age=parseInt(document.getElementById('age-sl').value);
+  const wealth=calcWealth(age);
+  const grades=[
+    {max:50000,g:'FINANCIALLY SCORCHED',r:"You'll be eating beans at 70. Not artisan beans. Sad beans."},
+    {max:150000,g:'LUKEWARM FUTURE',r:"You might afford a small shed in retirement. Not in London though."},
+    {max:400000,g:'ALMOST RESPECTABLE',r:"Not bad. Not good. The beige wallpaper of retirement savings."},
+    {max:800000,g:'SOLID CHOICES',r:"Look at you, being a functional adult. The bar was low but you cleared it."},
+    {max:Infinity,g:'COMPOUND INTEREST GANG',r:"You're going to be the rich friend. Don't forget the rest of us."},
+  ];
+  const grade=grades.find(g=>wealth<g.max);
+  document.getElementById('res-grade').textContent=grade.g;
+  document.getElementById('res-num').textContent=fmt(wealth);
+  document.getElementById('res-roast').textContent='"'+grade.r+'"';
+
+  const checkpoints=[30,40,50,60,67].filter(a=>a>age);
+  const vals=checkpoints.map(a=>{const yrs=a-age;let t=0;simChoices.forEach(cat=>{const idx=simSel[cat.id];const opt=cat.opts[idx];const rate=opt.smart?0.07:(opt.rate||0);t+=calcFV(opt.inv||0,rate,yrs);});return Math.round(t);});
+  const maxV=Math.max(...vals,1);
+  const tl=document.getElementById('sim-tl');tl.innerHTML='';
+  checkpoints.forEach((a,i)=>{
+    tl.innerHTML+=`<div class="tl-row"><div class="tl-age">Age ${a}</div><div class="tl-track"><div class="tl-fill" style="width:${Math.round((vals[i]/maxV)*100)}%"></div></div><div class="tl-val">${fmt(vals[i])}</div></div>`;
+  });
+
+  const ov={};simChoices.forEach(cat=>{const si=cat.opts.findIndex(o=>o.smart);if(si!==-1&&simSel[cat.id]!==si)ov[cat.id]=si;});
+  const smart=calcWealth(age,ov);
+  const sr=document.getElementById('swap-rows');sr.innerHTML='';
+  let hasSwap=false;
+  simChoices.forEach(cat=>{if(ov[cat.id]!==undefined){hasSwap=true;sr.innerHTML+=`<div class="swap-item"><span>${cat.icon}</span><span class="sw-from">${cat.opts[simSel[cat.id]].label}</span><span class="sw-arr">→</span><span class="sw-to">${cat.opts[ov[cat.id]].label}</span></div>`;}});
+  if(!hasSwap)sr.innerHTML='<div style="font-size:12px;color:#22cc66;">Already on the smart path!</div>';
+  document.getElementById('swap-num').textContent=fmt(smart);
+  const diff=smart-wealth;
+  document.getElementById('swap-diff').textContent=diff>0?'+'+fmt(diff)+' more than your current path':'Already optimal!';
+  document.getElementById('cmp-bad').textContent=fmt(wealth);
+  document.getElementById('cmp-good').textContent=fmt(smart);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+buildModePill();
+buildHome();
+buildTransactions();
+buildSubs();
+buildLeaderboard();
+buildFriends();
+buildSquad();
+buildWarren();
+buildSimChoices();
+
+setTimeout(()=>showToast('🏆 Redd just claimed top of the shame board. Dethrone them.'),1800);
+</script>
+</body>
+</html>
