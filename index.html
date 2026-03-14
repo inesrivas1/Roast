@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROA$T</title>
-
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.png">
-
-<meta name="theme-color" content="#ff6b1a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -217,13 +210,13 @@ canvas{width:100%!important;height:100%!important;}
 <div class="header">
   <div class="logo">ROA<span>$</span>T</div>
   <div style="display:flex;align-items:center;gap:7px;">
-    <div class="mode-pill" id="mode-pill"></div>
-    <div class="shame-badge">SHAME: 74</div>
+    <div class="shame-badge" id="shame-display">SHAME: 74</div>
   </div>
 </div>
 
 <!-- HOME + SPEND -->
 <div class="page active" id="page-home">
+  <div style="display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;" id="mode-pill-wrap"><div class="mode-pill" id="mode-pill"></div></div>
   <div class="roast-box">
     <div class="rb-top"><div class="rb-avatar" id="h-avatar">🔥</div><div class="rb-grade" id="h-grade">FINANCIALLY COOKED</div></div>
     <div class="rb-text" id="h-roast">"You spent £47 on coffee this week. That's a flight to Amsterdam. You chose caffeine over Europe. Iconic, honestly."</div>
@@ -383,12 +376,12 @@ const modes=[
   {id:'hype',label:'🎉',avatar:'🎉',grade:'THRIVING (SOMEHOW)',roast:'"OKAY but you survived AND treated yourself AND still have £12 left?? That\'s called balance actually."',tx:["Triple shot era!! We respect the commitment!!","Self-care is ordering in on a Wednesday. You deserve it.","Two drinks in one day?? We are CELEBRATING apparently!!","Late night snacks are a love language. Beautiful.","Investment in entertainment is investment in happiness!!"],sys:'Unhinged hype person finding the positive in bad spending. 1-2 sentences.'},
 ];
 let mode='savage';
-const leaderboard=[{name:'Jake',av:'🤦',col:'#4687ff',shame:91,badge:'Deliveroo Dependent'},{name:'Maya',av:'💀',col:'#e50914',shame:88,badge:'Subscription Hoarder'},{name:'You',av:'😬',col:'#ff6b1a',shame:74,badge:'Oat Milk Addict',me:true},{name:'Julia',av:'😅',col:'#22cc66',shame:68,badge:'Almost Responsible'},{name:'Tom',av:'🥲',col:'#c9a84c',shame:55,badge:'Occasional Adult'}];
+const leaderboard=[{name:'Redd',av:'🤦',col:'#4687ff',shame:91,badge:'Deliveroo Dependent'},{name:'Maya',av:'💀',col:'#e50914',shame:88,badge:'Subscription Hoarder'},{name:'You',av:'😬',col:'#ff6b1a',shame:74,badge:'Oat Milk Addict',me:true},{name:'Zac',av:'😅',col:'#22cc66',shame:68,badge:'Almost Responsible'},{name:'Tom',av:'🥲',col:'#c9a84c',shame:55,badge:'Occasional Adult'}];
 const groupChallenges=[
-  {icon:'🍕',name:'No Deliveroo Week',desc:'Whole squad cooks at home for 7 days',prize:'🏆 Shame -15 each',pct:60,days:5,status:'live',members:[{n:'You',ok:true},{n:'Jake',ok:false},{n:'Julia',ok:true},{n:'Maya',ok:false}]},
-  {icon:'☕',name:'One Coffee Rule',desc:'Max 1 bought coffee per day',prize:'🏆 Caffeine Controlled badge',pct:80,days:5,status:'live',members:[{n:'You',ok:true},{n:'Jake',ok:true},{n:'Julia',ok:true},{n:'Maya',ok:false}]},
-  {icon:'📺',name:'Sub Purge',desc:'Everyone cancels one unused subscription',prize:'🏆 +10 squad points',pct:100,days:0,status:'done',members:[{n:'You',ok:true},{n:'Jake',ok:true},{n:'Julia',ok:true},{n:'Maya',ok:true}]},
-  {icon:'💰',name:'Save £50 Together',desc:'Each member saves £50 this week',prize:'🏆 Broke No More badge',pct:25,days:5,status:'live',members:[{n:'You',ok:true},{n:'Jake',ok:false},{n:'Julia',ok:false},{n:'Maya',ok:false}]},
+  {icon:'🍕',name:'No Deliveroo Week',desc:'Whole squad cooks at home for 7 days',prize:'🏆 Shame -15 each',pct:60,days:5,status:'live',members:[{n:'You',ok:true},{n:'Redd',ok:false},{n:'Zac',ok:true},{n:'Maya',ok:false}]},
+  {icon:'☕',name:'One Coffee Rule',desc:'Max 1 bought coffee per day',prize:'🏆 Caffeine Controlled badge',pct:80,days:5,status:'live',members:[{n:'You',ok:true},{n:'Redd',ok:true},{n:'Zac',ok:true},{n:'Maya',ok:false}]},
+  {icon:'📺',name:'Sub Purge',desc:'Everyone cancels one unused subscription',prize:'🏆 +10 squad points',pct:100,days:0,status:'done',members:[{n:'You',ok:true},{n:'Redd',ok:true},{n:'Zac',ok:true},{n:'Maya',ok:true}]},
+  {icon:'💰',name:'Save £50 Together',desc:'Each member saves £50 this week',prize:'🏆 Broke No More badge',pct:25,days:5,status:'live',members:[{n:'You',ok:true},{n:'Redd',ok:false},{n:'Zac',ok:false},{n:'Maya',ok:false}]},
 ];
 const warrenAdvice=[{spend:'£47 on coffee',save:'£40/mo',tip:'Invest £40/month in an S&P 500 index fund. In 30 years at 7%: £48,000.'},{spend:'£127 on subscriptions',save:'£87/mo',tip:'Cut to 2 services, invest the rest. In 30 years: £105,000. Cancel LinkedIn Premium first.'},{spend:'£18.99 Deliveroo',save:'£60/mo',tip:'Cook 4 nights a week, invest the £60 saved. Over 30 years: £72,000.'}];
 const dykData=[{icon:'📈',stat:'£1M+',text:'What £200/month from age 21 becomes by retirement at 7% annual return'},{icon:'⏰',stat:'10 yrs',text:'Starting investing a decade earlier can double your entire retirement pot'},{icon:'☕',stat:'£180k',text:'What your daily £5 coffee would be worth if invested over 30 years instead'},{icon:'📉',stat:'0',text:'Negative 20-year periods in S&P 500 history. Time in beats timing — always.'},{icon:'💸',stat:'£1,524',text:'What the average student spends on unused subscriptions every year'}];
@@ -402,7 +395,7 @@ const quizQuestions=[
   {q:'What is a pension?',opts:['A savings account you can access any time','A government fine for not saving','A long-term savings scheme with employer contributions and tax benefits','A type of loan'],correct:2,explain:'A pension is a tax-efficient retirement savings scheme. In the UK, your employer must contribute too. Free money — not using it is one of the most common student financial mistakes.'},
   {q:'The "latte factor" refers to:',opts:['The cost of making coffee at home','How small daily expenses add up to huge amounts over time','A type of investment strategy','The price difference between coffee brands'],correct:1,explain:'£5/day on coffee = £1,825/year = £54,750 over 30 years. Invested at 7%, that same money becomes over £180,000. Small daily habits have enormous long-term costs.'},
 ];
-let quizIndex=0,quizScore=0,quizAnswered=false,quizInitialised=false,chartsInitialised=false;
+let quizIndex=0,quizScore=0,quizAnswered=false,quizInitialised=false,chartsInitialised=false,shameScore=74;
 let compoundChart=null,sp500Chart=null;
 const simChoices=[
   {id:'phone',icon:'📱',label:'Phone',opts:[{label:'£800/year',inv:0},{label:'£800 every 3yr',inv:0},{label:'Keep + invest diff',inv:67,smart:true}]},
@@ -443,7 +436,7 @@ function buildHome(){
 }
 function buildTransactions(){
   const list=document.getElementById('tx-list'),m=getMode();
-  transactions.forEach((tx,i)=>{const mid='txm-'+i,bid='txb-'+i;const card=document.createElement('div');card.className='tx-card';card.innerHTML=`<div class="tx-icon">${tx.icon}</div><div class="tx-body"><div class="tx-title"><span>${tx.name}</span><span class="tx-amt">£${tx.amount.toFixed(2)}</span></div><div class="tx-roast" id="${mid}">${m.tx[i]}</div></div><button class="roast-btn" id="${bid}" onclick="aiRoastTx(${i},'${mid}','${bid}')">Roast</button>`;list.appendChild(card);});
+  transactions.forEach((tx,i)=>{const mid='txm-'+i,bid='txb-'+i;const card=document.createElement('div');card.className='tx-card';card.innerHTML=`<div class="tx-icon">${tx.icon}</div><div class="tx-body"><div class="tx-title"><span>${tx.name}</span><span class="tx-amt">£${tx.amount.toFixed(2)}</span></div><div class="tx-roast" id="${mid}">${m.tx[i]}</div></div>`;list.appendChild(card);});
 }
 async function aiRoastTx(i,mid,bid){
   const tx=transactions[i],btn=document.getElementById(bid),el=document.getElementById(mid),m=getMode();
@@ -458,14 +451,14 @@ function buildSubs(){
 }
 function buildLeaderboard(){
   const sorted=[...leaderboard].sort((a,b)=>b.shame-a.shame),rc=['r1','r2','r3','r4','r4'];
-  sorted.forEach((p,i)=>{document.getElementById('lb-list').innerHTML+=`<div class="lb-row${p.me?' me':''}"><div class="lb-rank ${rc[i]}">${i+1}${i===0?' 👑':''}</div><div class="lb-av" style="background:${p.col}18;border:1.5px solid ${p.col}33;">${p.av}</div><div class="lb-info"><div class="lb-name">${p.name}${p.me?'<span class="you-tag">YOU</span>':''}</div><div class="lb-badge">${p.badge}</div></div><div class="lb-shame">${p.shame}</div></div>`;});
+  sorted.forEach((p,i)=>{document.getElementById('lb-list').innerHTML+=`<div class="lb-row${p.me?' me':''}"><div class="lb-rank ${rc[i]}">${i+1}${i===0?' 👑':''}</div><div class="lb-av" style="background:${p.col}18;border:1.5px solid ${p.col}33;">${p.av}</div><div class="lb-info"><div class="lb-name">${p.name}${p.me?'<span class="you-tag">YOU</span>':''}</div></div><div class="lb-shame">${p.shame}</div></div>`;});
 }
 function buildSquad(){
   squadEmoji.forEach((e,i)=>{document.getElementById('squad-pips').innerHTML+=`<div class="squad-pip" style="background:${squadCols[i]}18;border-color:${squadCols[i]}44;">${e}</div>`;});
   groupChallenges.forEach(c=>{
     const mems=c.members.map(m=>`<div class="gc-mpill"><span>${m.ok?'✅':'⏳'}</span><span class="gc-mname">${m.n}</span></div>`).join('');
     const stC=c.status==='done'?'st-done':'st-live',stL=c.status==='done'?'DONE':'LIVE',pC=c.status==='done'?'#c9a84c':'#22cc66';
-    document.getElementById('gc-list').innerHTML+=`<div class="gc-card ${c.status}"><div class="gc-top"><div class="gc-icon">${c.icon}</div><div class="gc-body"><div class="gc-name">${c.name}</div><div class="gc-desc">${c.desc}</div><div class="gc-prize">${c.prize}</div></div><div class="gc-status ${stC}">${stL}</div></div><div class="gc-members">${mems}</div><div class="prog-track"><div class="prog-fill" style="width:${c.pct}%;background:${pC};"></div></div><div class="prog-meta"><span>${c.pct}% done</span><span>${c.days>0?c.days+' days left':'Finished'}</span></div></div>`;
+    document.getElementById('gc-list').innerHTML+=`<div class="gc-card ${c.status}"><div class="gc-top"><div class="gc-icon">${c.icon}</div><div class="gc-body"><div class="gc-name">${c.name}</div><div class="gc-desc">${c.desc}</div></div><div class="gc-status ${stC}">${stL}</div></div><div class="gc-members">${mems}</div><div class="prog-track"><div class="prog-fill" style="width:${c.pct}%;background:${pC};"></div></div><div class="prog-meta"><span>${c.pct}% done</span><span>${c.days>0?c.days+' days left':'Finished'}</span></div></div>`;
   });
 }
 function buildLearnStatic(){
@@ -531,6 +524,7 @@ function nextQuestion(){
     const grades=[{min:90,g:'WARREN BUFFETT INCOMING 🎩'},{min:70,g:'FINANCIALLY LITERATE 📈'},{min:50,g:'GETTING THERE 👀'},{min:0,g:'BACK TO SCHOOL 📚'}];
     const grade=grades.find(g=>pct>=g.min);
     document.getElementById('quiz-card').innerHTML=`<div style="text-align:center;padding:8px 0;"><div style="font-size:36px;margin-bottom:8px;">${pct>=70?'🎉':'📚'}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:34px;color:#ff6b1a;letter-spacing:2px;">${quizScore}/${quizQuestions.length}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#444;margin:3px 0 12px;">${grade.g}</div><div style="font-size:11px;color:#555;margin-bottom:18px;">${pct>=70?'Shame score -5. You\'re learning.':'Check the Learn page for context.'}</div><button class="cta" onclick="resetQuiz()">TRY AGAIN</button></div>`;
+    if(pct>=70){shameScore=Math.max(0,shameScore-5);document.getElementById('shame-display').textContent='SHAME: '+shameScore;}
     buildQuizProgress();return;
   }
   renderQuestion();
@@ -564,12 +558,5 @@ function runSim(){
 
 buildModePill();buildHome();buildTransactions();buildSubs();buildLeaderboard();buildSquad();buildLearnStatic();buildSimChoices();
 </script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
-
 </body>
 </html>
