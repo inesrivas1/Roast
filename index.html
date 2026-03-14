@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROA$T</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+
+<meta name="theme-color" content="#ff6b1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -557,6 +564,13 @@ function runSim(){
 }
 
 buildModePill();buildHome();buildTransactions();buildSubs();buildLeaderboard();buildSquad();buildLearnStatic();buildSimChoices();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+
 </script>
 </body>
 </html>
